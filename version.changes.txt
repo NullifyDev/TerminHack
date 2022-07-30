@@ -1,0 +1,4 @@
+
+Version 1.0: Dev Log 02 - Added Comamnd Handler
+
+Version 1.0: Dev Log 001 - Terminal Output and Welcome Text
