@@ -23,7 +23,7 @@ TerminHack is a game about hacking. This game contains 4th-wall-breaking events 
 ### Is TerminHack safe to run?
 Yes. The developer(s) intend to create a safe and enjoyable experience while ensuring that nothing bad or unintentional happens, and i can assure you that. This game __WILL NOT TOUCH YOUR CRUCIAL SYSTEM FILES, SETTINGS OR USER DEFINED DATA OR CHANGE ANY SETTINGS MADE BY THE USER OR THE SYSTEM.__ This game __will not__ go outside of your machine, and at most, will only check to see if wifi is enabled in order for the game to replicate offline mode. 
 
-The game will only do video, audio as well as input related events such as fake disconnection of keyboard (features as such will be thoroughly tested by as many play-testers as possible to ensure that nothing hoes wrong. Dont worry. If anything, you can follow some of the  report it back to me).
+The game will only do video, audio as well as input related events such as fake disconnection of keyboard (features as such will be thoroughly tested by as many play-testers as possible to ensure that nothing goes wrong. Dont worry. If anything, you can follow some of the  report it back to me).
 
 ### Does it actually execute commands, malware and scripts? 
 No, it will not. The game __will fake this__ using visual and auditory elements.
