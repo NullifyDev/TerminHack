@@ -17,36 +17,27 @@ public partial class Command
         {
             var tfs = terminal.fs;
 
-            string flags = "", dir = "", pwd = "";
+            string flags = "", dir = "";
             foreach (var s in args)
             {
                 if (s.StartsWith("-"))
                     flags += s[1..^0];
-
-                if (dir == "") dir = (s ?? "");
                 break;
             }
-
-            object? n = tfs.Traverse(terminal, dir);
+            
+            Content? n = tfs.Retreive(terminal, dir ?? ".");
             switch (n)
             {
-                case null: return;
-                case string file:
-                    pwd = $"{tfs.PathStr}/{dir}";
-                    terminal.Print(pwd != "/"
-                        ? pwd[Convert.ToInt32(pwd.StartsWith("//"))..^(Convert.ToInt32(pwd.EndsWith("/")))]
-                        : "/"
-                    );
+                case null: 
+                    terminal.Error(this, dir, "no such file or directory");
                     return;
-                case Dictionary<string, Content> folder:
-                    if (tfs.PathStr != "/")
-                    {
-                        pwd = $"{tfs.PathStr}/{dir}";
-                        pwd = pwd[Convert.ToInt32(pwd.StartsWith("//"))..^(Convert.ToInt32(pwd.EndsWith("/")))];
-                    }
-                    else pwd = $"/{dir}";
 
-                    terminal.Print(pwd);
+                case string file:
+                    terminal.Print($"└─ {tfs.PathStr}/{file}");
+                    return;
+
+                case Dictionary<string, Content> folder:
+                    // terminal.Print(tfs.PathStr);
                     for (int i = 0; i < folder.Count; i++)
                     {
                         string c = folder.ElementAt(i).Key ?? "TH_INTERNAL_ERROR_NULL_ENTRY";

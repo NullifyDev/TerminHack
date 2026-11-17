@@ -27,23 +27,17 @@ public partial class Command
                 break;
             }
 
-            if (dir == "..")
-            {
-                tfs.TraverseUp();
-                return;
-            }
-
             Content? node = tfs.Retreive(terminal, dir);
             switch(node)
             {
-                case string file:
+                case string:
                     terminal.Error(this, dir, "not a directory");
                     return;
 
                 case Dictionary<string, Content> folder:
                     tfs.CurrentFolder = folder;
                     tfs.Path.Push(new(dir.Split("/").Last(), tfs.CurrentFolder));
-                    tfs.PathStr = $"{string.Join("/", tfs.Path.Reverse().ToArray())}";
+                    tfs.UpdatePath();
                     return;
 
                 case null:

@@ -63,18 +63,6 @@ For more information, try '--help'");
                     terminal.Error(this, name, "no such file or directory");
                     return;
             }
-
-            // bool valid = true;
-            // foreach(char c in name)
-            // {
-            //     if (c >= '0'  && c <= '0'
-            //     ||  c >= 'A'  && c <= 'Z'
-            //     ||  c >= 'a'  && c <= 'z'
-            //     ||  c >= 192 && c <= 255)
-            //         continue;
-
-            //     terminal.Error(this, name, "not a valid name");
-            // }
         }
     }
 }

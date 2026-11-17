@@ -24,10 +24,8 @@ public record Terminal(string Username, string MachineName)
     {
         while (true)
         {
-            this.fs.PathToStr();
-            if (this.fs.PathStr == null)
-                this.fs.PathStr = "/";
-
+            this.fs.Path.Clear();
+            this.fs.UpdatePath();
             this.Prompt = $"{Username}@{MachineName}: {this.fs.PathStr ?? "/"}# ";
             // this.Prompt = $"{Username}@{MachineName}: {this.fs.Path_ToString()}{PermissionLevel switch
             // {
@@ -35,7 +33,7 @@ public record Terminal(string Username, string MachineName)
             //     Privilage.SuperUser => '#',
             //     Privilage.Root => '#'
             // }} ";
-            
+
             System.Console.Write(this.Prompt);
 
             string input = Console.ReadLine() ?? "";
@@ -105,7 +103,7 @@ public record Terminal(string Username, string MachineName)
 
     public void Print(string? msg = "") => Console.WriteLine(msg);
     public void Error(object? cmd, ReadOnlySpan<char> arg, ReadOnlySpan<char> msg)
-        => Console.WriteLine(arg == null 
+        => Console.WriteLine(arg == null
             ? $"{(cmd != null ? cmd.GetType().Name.ToLower() : "bash")}: {msg}"
             : $"{(cmd != null ? cmd.GetType().Name.ToLower() : "bash")}: {arg}: {msg}");
 }

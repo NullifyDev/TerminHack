@@ -1,5 +1,6 @@
 namespace TerminHack;
 
+using System.Formats.Asn1;
 using static TerminHack.FileSystem;
 
 public partial class Command
@@ -24,15 +25,12 @@ public partial class Command
             }
 
             string[] ss = file.Split("/");
-            string p = string.Join("/", ss.Length > 1
-                    ? ss[0..^1]
-                    : ss[0]),
+            var ret = tfs.Retreive(terminal, string.Join("/", ss.Length > 1? ss[0..^1] : ss[0]));
 
-                    c = ss.Count() >= 1
-                        ? ss[ss.Length-1]
-                        : ss[0];
+            if (!ret.HasValue) 
+                terminal.Error(this, file, "No such file or Directory");
 
-            switch (tfs.Traverse(terminal, p)?[ss[ss.Length-1]])
+            switch (ret)
             {
                 case string s:
                     terminal.Print(s);
@@ -47,9 +45,6 @@ public partial class Command
                     terminal.Error(this, file, "No such file or Directory");
                     break;
             }
-
-            // if (f!.ToString().Length > 1) terminal.Print(f.Contents.ToString());
-            // else System.Console.WriteLine();
         }
     }
 }

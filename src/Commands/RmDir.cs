@@ -33,7 +33,7 @@ public partial class Command
                 return;
             }
 
-            tfs.Traverse(terminal, string.Join("/", p[0..^1]));
+            tfs.Retreive(terminal, string.Join("/", p[0..^1]));
             if (cf.Count > 0)
             {
                 terminal.Error(this, folder, "folder is not empty");
@@ -41,7 +41,7 @@ public partial class Command
             }
 
             tfs.Path.Pop();
-            tfs.CurrentFolder = (tfs.Path.Last().Value.Value as Dictionary<string, Content>)!;
+            tfs.CurrentFolder = (tfs.Path.Last().Value as Dictionary<string, Content>)!;
             tfs.PathStr = tfs.Path.ToString() ?? "TH_UNKNOWN_ERROR";
         }
     }
