@@ -3,3 +3,4 @@ dotnet/
 obj/
 .git/
 .vscode/
+dir.*.*.json

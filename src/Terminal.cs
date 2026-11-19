@@ -22,10 +22,11 @@ public record Terminal(string Username, string MachineName)
 
     public async void Start()
     {
+        this.fs.Path.Clear();
+        this.fs.UpdatePath();
+        
         while (true)
         {
-            this.fs.Path.Clear();
-            this.fs.UpdatePath();
             this.Prompt = $"{Username}@{MachineName}: {this.fs.PathStr ?? "/"}# ";
             // this.Prompt = $"{Username}@{MachineName}: {this.fs.Path_ToString()}{PermissionLevel switch
             // {

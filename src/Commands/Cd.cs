@@ -27,16 +27,15 @@ public partial class Command
                 break;
             }
 
-            Content? node = tfs.Retreive(terminal, dir);
-            switch(node)
+            switch(tfs.Retreive(terminal, dir))
             {
                 case string:
                     terminal.Error(this, dir, "not a directory");
                     return;
 
                 case Dictionary<string, Content> folder:
-                    tfs.CurrentFolder = folder;
-                    tfs.Path.Push(new(dir.Split("/").Last(), tfs.CurrentFolder));
+                    var d = dir.Split("/");
+                    tfs.EnterDirectory(terminal, d[d.Length-1]);
                     tfs.UpdatePath();
                     return;
 
@@ -44,7 +43,6 @@ public partial class Command
                     terminal.Error(this, dir, "no such file or directory");
                     return;
             }
-
         }
     }
 }

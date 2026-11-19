@@ -20,12 +20,15 @@ public partial class Command
             string flags = "", dir = "";
             foreach (var s in args)
             {
-                if (s.StartsWith("-"))
+                if (s.StartsWith("-")) {
                     flags += s[1..^0];
-                break;
+                    continue;
+                }
+
+                dir = s;
             }
             
-            Content? n = tfs.Retreive(terminal, dir ?? ".");
+            Content? n = tfs.Retreive(terminal, dir ?? ".", new(tfs));
             switch (n)
             {
                 case null: 

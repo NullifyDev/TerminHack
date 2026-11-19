@@ -38,29 +38,22 @@ For more information, try '--help'");
             }
             
             Content? parent = tfs.CurrentFolder;
-            if (sstr.Length >= 2)
-                parent = tfs.Retreive(terminal, string.Join("/", sstr.Length > 2 ? sstr[0..^1] : sstr[0]));
-
-            string child = sstr.Length > 1
-                ? sstr[sstr.Length-1]
-                : sstr[0];
+            if (sstr.Length > 1)
+                parent = tfs.Retreive(terminal, sstr.Length > 2 ? string.Join("/",  sstr[0..^1]) : sstr[0], new(tfs));
 
             switch (parent)
             {
                 case string file:
-                    terminal.Error(this, null, "not a directory");
+                    terminal.Error(this, name, "File exists");
                     return;
 
                 case Dictionary<string, Content> folder:
-                    // if (folder is JObject) 
-                    terminal.Print($"DEBUG: folder \"{tfs.PathStr}\" is {folder.GetType().FullName}");
-
-                    folder.Add(child, new Content(new Dictionary<string, Content>()));
+                    folder.Add(sstr.Length > 1 ? sstr[sstr.Length-1] : sstr[0], new Content(new Dictionary<string, Content>()));
                     tfs.WriteSave();
                     return;
 
                 case null:
-                    terminal.Error(this, name, "no such file or directory");
+                    terminal.Print("mkdir: No such file or directory");
                     return;
             }
         }

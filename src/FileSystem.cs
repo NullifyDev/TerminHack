@@ -154,12 +154,12 @@ public partial class FileSystem
                         return null;
 
                     var item = cf[name];
-                    if (i > traversal.Length - 1)
+                    if (i < traversal.Length - 1)
                     {
                         if (item.IsFolder())
                         {
                             fs.EnterDirectory(terminal, name, fs);
-                            fs.Retreive(terminal, string.Join("/", traversal[1..]));
+                            return fs.Retreive(terminal, string.Join("/", traversal[1..]));
                         }
                         else if (item.IsFile())
                         {
@@ -246,7 +246,8 @@ public partial class FileSystem
             return;
         }
 
-        this.CurrentFolder = f;
+        fs.CurrentFolder = f;
+        fs.Path.Push(new(folder, f));
     }
 
     public void WriteSave()
@@ -264,12 +265,14 @@ public partial class FileSystem
         }
 
         StringBuilder ss = new();
-        foreach (var p in this.Path)
+        foreach (var p in this.Path.Reverse())
         {
             if (p.Key == "root") continue;
             ss.Append($"/{p.Key}");
         }
 
+        this.Path.Reverse();
+    
         this.PathStr = ss.ToString();
     }
 }

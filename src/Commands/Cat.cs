@@ -25,7 +25,7 @@ public partial class Command
             }
 
             string[] ss = file.Split("/");
-            var ret = tfs.Retreive(terminal, string.Join("/", ss.Length > 1? ss[0..^1] : ss[0]));
+            var ret = tfs.Retreive(terminal, ss.Length > 1 ? string.Join("/", ss[0..]) : ss[0], new(tfs));
 
             if (!ret.HasValue) 
                 terminal.Error(this, file, "No such file or Directory");
@@ -40,7 +40,6 @@ public partial class Command
                     terminal.Error(this, file, "is a directory");
                     break;
 
-                case null:
                 default: 
                     terminal.Error(this, file, "No such file or Directory");
                     break;

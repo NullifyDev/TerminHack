@@ -16,40 +16,33 @@ public partial class Command
         public void Run(Terminal terminal, ReadOnlySpan<string> args)
         {
             var tfs = terminal.fs;
-            string name = "";
+            string dir = "";
             foreach (var s in args)
             {
                 if (s.StartsWith("-")) continue;
-                if (name == "") name = s;
+                if (dir == "") dir = s;
                 break;
             }
 
-            var sstr = name.Split('/');
-            if (sstr.Length <= 1 && name == "")
-            {
-                terminal.Print(@"touch: missing file operand
-Try 'touch --help' for more information.");
-                return;
-            }
-            
-            object? parent = sstr.Count() > 1
-                ? tfs.Retreive(terminal, string.Join("/", sstr[0..^1]))
-                : tfs.CurrentFolder;
-
-            string child = sstr.Count() >= 1
-                ? sstr[sstr.Length-1]
-                : sstr[0];
+            var sstr = dir.Split("/");
+            var name = sstr[^0];
+            Content? parent = tfs.CurrentFolder;
+            if (sstr.Length > 1)
+                parent = tfs.Retreive(terminal, sstr.Length > 2 ? string.Join("/",  sstr[0..^1]) : sstr[0], new(tfs));
 
             switch (parent)
             {
-                case null: return;
                 case string file:
-                    terminal.Error(this, name, "not a directory");
+                    terminal.Error(this, dir, "File exists");
                     return;
 
                 case Dictionary<string, Content> folder:
-                    folder.Add(child, "");
+                    folder.Add(name, "");
                     tfs.WriteSave();
+                    return;
+
+                case null:
+                    terminal.Print("mkdir: No such file or directory");
                     return;
             }
         }

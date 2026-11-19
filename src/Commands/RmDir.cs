@@ -16,33 +16,43 @@ public partial class Command
         public void Run(Terminal terminal, ReadOnlySpan<string> args)
         {
             var tfs = terminal.fs;
-            var cf = tfs.CurrentFolder;
-            string folder = "";
+
+            string dir = "";
 
             foreach(var s in args)
             {
                 if (s.StartsWith("-")) continue;
-                if (folder == "") folder = s;
+                if (dir == "") dir = s;
                 break;
             }
 
-            string[] p = folder.Split("/");
+            string[] p = dir.Split("/");
             string name = p.Last();
-            if (!cf.ContainsKey(folder)) {
-                terminal.Error(this, folder, "no such file or directory");
-                return;
-            }
 
-            tfs.Retreive(terminal, string.Join("/", p[0..^1]));
-            if (cf.Count > 0)
+            Content? parent = tfs.CurrentFolder;
+            if (p.Length > 1)
+                parent = p.Length > 1 ? tfs.Retreive(terminal, p.Length > 2 ? string.Join("/",  p[0..^1]) : p[0], new(tfs)) : new Content(tfs.CurrentFolder);
+
+            switch (parent)
             {
-                terminal.Error(this, folder, "folder is not empty");
-                return;
-            }
+                case string file:
+                    terminal.Error(this, name, "File exists");
+                    break;
 
-            tfs.Path.Pop();
-            tfs.CurrentFolder = (tfs.Path.Last().Value as Dictionary<string, Content>)!;
-            tfs.PathStr = tfs.Path.ToString() ?? "TH_UNKNOWN_ERROR";
+                case Dictionary<string, Content> folder:
+                    if (folder[name].IsFile()) {
+                        terminal.Error(this, dir, "File exists");
+                        return;
+                    }
+
+                    folder.Remove(name);
+                    tfs.WriteSave();
+                    break;
+
+                case null:
+                    terminal.Print("rmdir: No such file or directory");
+                    break;
+            }
         }
     }
 }

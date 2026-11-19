@@ -4,7 +4,6 @@ using static TerminHack.FileSystem;
 
 public partial class Command
 {
-    // use "rmdir" for empty folders when running with recursion flag "-r"
     public class Rm : ICommands
     {
         public string GetManual()
@@ -13,46 +12,58 @@ public partial class Command
 -2 -          Two
 -3<4>         Three<four>
 ";
-
+            
         public void Run(Terminal terminal, ReadOnlySpan<string> args)
         {
             var tfs = terminal.fs;
-            string folder = "";
+
+            string dir = "";
+            bool recursive = false, force = false;
+
 
             foreach(var s in args)
             {
-                if (s.StartsWith("-")) continue;
-                if (folder == "") folder = s;
+                if (s.StartsWith("-")) 
+                {
+                    switch(s[1..^0])
+                    {
+                        case "r":
+                            recursive = true;
+                            break;
+                    }
+                    continue;
+                }
+                if (dir == "") dir = s;
                 break;
             }
 
-            string[] ss = folder.Split("/");
-            if (ss.Length < 1 ) {
-                terminal.Print(@"rm: missing operand
-Try 'rm --help' for more information");
-                return;
-            }
-            
-            Content? p = null;
-            if (ss.Length > 1)
-                p = tfs.Retreive(terminal, string.Join("/", ss[0..^1]));
+            string[] p = dir.Split("/");
+            string name = p.Last();
 
-            if (!p.HasValue) return;
-            Content parent = p.Value;
-            if (parent.Value is string)
+            Content? parent = tfs.CurrentFolder;
+            if (p.Length > 1)
+                parent = p.Length > 1 ? tfs.Retreive(terminal, p.Length > 2 ? string.Join("/",  p[0..^1]) : p[0], new(tfs)) : new Content(tfs.CurrentFolder);
+
+            switch (parent)
             {
-                terminal.Error(this, folder, "parent directory is a file");
-                return;
-            }
+                case string file:
+                    terminal.Error(this, name, "File exists");
+                    break;
 
-            Dictionary<string, Content> f = parent.Value as Dictionary<string, Content> ?? tfs.CurrentFolder;
-            string n = ss[ss.Length-1];
-            if (f.ContainsKey(n))
-            {
-                f.Remove(n);
-            }
+                case Dictionary<string, Content> folder:
+                    if (folder[name].IsFolder() && recursive == false)
+                    {   
+                        terminal.Error(this, $"Cannot remove '{dir}'", "Is a directory");
+                        return;
+                    }
+                    folder.Remove(name);
+                    tfs.WriteSave();
+                    break;
 
-            tfs.WriteSave();
+                case null:
+                    terminal.Print("rm: No such file or directory");
+                    break;
+            }
         }
     }
 }

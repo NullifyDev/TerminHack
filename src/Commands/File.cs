@@ -18,7 +18,7 @@ public partial class Command
             var tfs = terminal.fs;
             foreach(string s in args)
             {
-                var r = tfs.Retreive(terminal, s);
+                var r = tfs.Retreive(terminal, s, new(tfs));
                 terminal.Print(r switch
                 {
                     string => $"{s}: ASCII text",
