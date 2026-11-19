@@ -13,6 +13,7 @@ Commands:
 - [ ] History
 
 Features:
+- [ ] File System
 - [ ] Shell Scripting
 - [ ] Hardware Managment
 - [ ] Resource Demand System
