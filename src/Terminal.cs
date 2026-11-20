@@ -107,4 +107,7 @@ public record Terminal(string Username, string MachineName)
         => Console.WriteLine(arg == null
             ? $"{(cmd != null ? cmd.GetType().Name.ToLower() : "bash")}: {msg}"
             : $"{(cmd != null ? cmd.GetType().Name.ToLower() : "bash")}: {arg}: {msg}");
+        
+    public void CriticalError(string location, string msg)
+        => Console.WriteLine($"something went horribly wrong...\n    at {location}\n    {msg}");
 }

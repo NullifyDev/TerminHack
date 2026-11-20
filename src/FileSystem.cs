@@ -163,9 +163,10 @@ public partial class FileSystem
                         }
                         else
                         {
-                            System.Console.WriteLine("something went horribly wrong...");
-                            System.Console.WriteLine("at FileSystem.Traverse():");
-                            System.Console.WriteLine($"  name: {name}, cf.Count: {cf.Count}, item: {item.GetType().FullName}");
+                            terminal.CriticalError(
+                                "FileSystem.Traverse()", 
+                                $"name: {name}, cf.Count: {cf.Count}, item: {item.GetType().FullName}"
+                            );
                         }
                     }
                     else
@@ -175,9 +176,10 @@ public partial class FileSystem
                             var f = cf[name].GetFolder();
                             if (f == null)
                             {
-                                System.Console.WriteLine("something went horribly wrong...");
-                                System.Console.WriteLine("at FileSystem.Traverse():");
-                                System.Console.WriteLine($"  name: {name}, cf.Count: {cf.Count}, getf: {f}\ncf[name]: {cf[name].GetType().FullName} = {cf[name]}");
+                                terminal.CriticalError(
+                                    "FileSystem.Traverse()", 
+                                    $"name: {name}, cf.Count: {cf.Count}, getf: {f}\ncf[name]: {cf[name].GetType().FullName} = {cf[name]}"
+                                );
                                 return null;
                             }
 
@@ -193,6 +195,8 @@ public partial class FileSystem
         }
         return null;
     }
+
+
 
     public void EnterDirectory(Terminal terminal, string folder, FileSystem? fs = null)
     {
@@ -228,16 +232,14 @@ public partial class FileSystem
 
         if (!item.IsFolder())
         {
-            System.Console.WriteLine("FileSystem.EnterDirectory: {folder} is not a folder");
+            System.Console.WriteLine($"FileSystem.EnterDirectory: {folder} is not a folder");
             return;
         }
 
         var f = item.GetFolder();
         if (f == null)
         {
-            System.Console.WriteLine("something went horribly wrong...");
-            System.Console.WriteLine("at FileSystem.EnterDirectory():");
-            System.Console.WriteLine($"  folder = string ({folder}), f: {f.GetType().FullName} ({f.ToString}), ");
+            terminal.CriticalError("FileSystem.EnterDirectory():", $"folder = string ({folder}), f: {f.GetType().FullName} ({f.ToString}), ");
             return;
         }
 
