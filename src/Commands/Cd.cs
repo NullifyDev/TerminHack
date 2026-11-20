@@ -35,7 +35,7 @@ public partial class Command
 
                 case Dictionary<string, Content> folder:
                     var d = dir.Split("/");
-                    tfs.EnterDirectory(terminal, d[d.Length-1]);
+                    tfs.EnterDirectory(terminal, d[^1]);
                     tfs.UpdatePath();
                     return;
 

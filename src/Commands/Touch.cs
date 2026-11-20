@@ -16,34 +16,43 @@ public partial class Command
         public void Run(Terminal terminal, ReadOnlySpan<string> args)
         {
             var tfs = terminal.fs;
+
             string dir = "";
-            foreach (var s in args)
+            bool recursive = false, force = false;
+
+
+            foreach(var s in args)
             {
-                if (s.StartsWith("-")) continue;
+                if (s.StartsWith("-")) 
+                    continue;
+
                 if (dir == "") dir = s;
                 break;
             }
 
-            var sstr = dir.Split("/");
-            var name = sstr[^0];
+            string[] p = dir.Split("/");
+            string name = p.Last();
+
             Content? parent = tfs.CurrentFolder;
-            if (sstr.Length > 1)
-                parent = tfs.Retreive(terminal, sstr.Length > 2 ? string.Join("/",  sstr[0..^1]) : sstr[0], new(tfs));
+            if (p.Length > 1)
+                parent = p.Length > 1 ? tfs.Retreive(terminal, p.Length > 2 ? string.Join("/",  p[0..^1]) : p[0], new(tfs)) : new Content(tfs.CurrentFolder);
 
             switch (parent)
             {
                 case string file:
-                    terminal.Error(this, dir, "File exists");
-                    return;
+                    break;
 
                 case Dictionary<string, Content> folder:
-                    folder.Add(name, "");
-                    tfs.WriteSave();
-                    return;
+                    if (!folder.ContainsKey(name)) 
+                    {
+                        folder.Add(name, new Content(""));
+                        tfs.WriteSave();
+                    }
+                    break;
 
                 case null:
-                    terminal.Print("mkdir: No such file or directory");
-                    return;
+                    terminal.Error(this, $"Cannot touch '{dir}'", "No such file or directory");
+                    break;
             }
         }
     }

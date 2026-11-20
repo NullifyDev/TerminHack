@@ -2,8 +2,10 @@
  * - Set this 'CurrentDirectory' variable to enter the home directory when the OS File Tree is complete
 */
 
+using System.IO;
+using System.Text;
 using System.Text.Json;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace TerminHack;
 
@@ -13,11 +15,12 @@ using Folder = Dictionary<string, FileSystem.Content>;
 using NodeInfo = KeyValuePair<string, FileSystem.Content>;
 using FolderInfo = KeyValuePair<string, Dictionary<string, FileSystem.Content>>;
 using File = string;
-using System.Text;
+
+
+public class Drive : Folder {}
 
 public partial class FileSystem
 {
-
     private string activeDrive;
 
     public Folder ActiveDrive, CurrentDrive, CurrentFolder;
@@ -40,35 +43,25 @@ public partial class FileSystem
         var options = new JsonSerializerOptions { WriteIndented = true };
         // System.Console.WriteLine(file);
         this.Path = new();
-        try
+
+        this.ActiveDrive = JsonSerializer.Deserialize<Drive>(System.IO.File.ReadAllText(this.activeDrive)) ?? new() 
         {
-            this.ActiveDrive = JsonSerializer.Deserialize<Folder>(System.IO.File.ReadAllText(this.activeDrive));
-        }
-        catch
-        {
-            // System.Console.WriteLine(JsonConvert.SerializeObject(this.ActiveDrive, Formatting.Indented));
-            this.ActiveDrive = new()
             {
+                "TH_INTERNAL_FS_ERROR",
+                new Content(new Dictionary<string, Content>()
                 {
-                    "TH_INTERNAL_FS_ERROR",
-                    new Content(new Dictionary<string, Content>()
                     {
-                        {
-                            "fs_load_failed.log",
-                            new Content("either the file or contents are missing or corrupted or the code is bugged")
-                        }
-                    })
-                }
-            };
-            System.Console.WriteLine(JsonSerializer.Serialize(this.activeDrive, options));
-        }
-        finally
-        {
-            this.CurrentDrive = this.ActiveDrive!;
-            this.CurrentFolder = this.CurrentDrive;
-            this.Path.Push(new("root", this.CurrentFolder));
-            this.UpdatePath();
-        }
+                        "fs_load_failed.log",
+                        new Content("either the file or contents are missing or corrupted or the code is bugged")
+                    }
+                })
+            }
+        };
+
+        this.CurrentDrive = this.ActiveDrive!;
+        this.CurrentFolder = this.CurrentDrive;
+        this.Path.Push(new("root", this.CurrentFolder));
+        this.UpdatePath();
     }
 
     public enum NodeType
@@ -147,6 +140,9 @@ public partial class FileSystem
                 case ".":
                 case "..":
                     fs.EnterDirectory(terminal, name, fs);
+                    if (i >= traversal.Length - 1) 
+                        return fs.CurrentFolder;
+
                     continue;
 
                 default:
@@ -215,8 +211,7 @@ public partial class FileSystem
                     if (this.Path.Count > 0)
                     {
                         this.Path.Pop();
-                        this.CurrentFolder = this.Path.Last().Value;
-                        // this.UpdatePath();
+                        this.CurrentFolder = this.Path.Count > 0 ? this.Path.Last().Value : this.CurrentDrive;
                     }
                     return;
                 case "/":
