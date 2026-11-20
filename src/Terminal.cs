@@ -66,11 +66,6 @@ public record Terminal(string Username, string MachineName)
 
                 if (concat)
                 {
-                    if (s.StartsWith('"'))
-                    {
-                        this.Print("INTERNAL ERROR: QUOTE ESCAPE MAY HAVE BEEN ATTEMPTED - ABORTING WITHOUT SAVING");
-                        Environment.Exit(1);
-                    }
                     if (s.EndsWith('"'))
                     {
                         str += $" {s[0..^1]}";
@@ -93,6 +88,12 @@ public record Terminal(string Username, string MachineName)
                 if (s.StartsWith("-")) continue;
                 // if (str == "") str = s;
                 args.Add(s);
+            }
+
+            if (concat == true)
+            {
+                this.Error(new Command.Bash(), $"unknown command '{string.Join(" ", split)}'", "trailing string found.");
+                continue;
             }
 
             if (args.Count == 1 && args[0] == "")
